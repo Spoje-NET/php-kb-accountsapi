@@ -1,0 +1,8 @@
+/docs
+/lib
+/vendor
+.*
+!.env.dist
+!.gitignore
+!.php-cs-fixer.php
+composer.lock
