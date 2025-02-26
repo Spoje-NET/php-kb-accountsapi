@@ -1,6 +1,6 @@
 <?php
 
-namespace KbApi;
+namespace Spojenet\KbAccountsApi;
 
 use RuntimeException;
 use SplFileInfo;
@@ -16,15 +16,15 @@ use function strtolower;
 use function trim;
 
 /**
- * @property-read bool|null $SANDBOX
- * @property-read string|null $CERTIFICATE_PATH
- * @property-read string $ADAA_API_KEY
- * @property-read string $AUTH_API_KEY
- * @property-read string $AUTH_CALLBACK_URI
- * @property-read string $SOFT_REGISTRATION_API_KEY
- * @property-read string $SOFT_REGISTRATION_CALLBACK_URI
- * @property-read string $APP_REGISTRATION_API_KEY
- * @property-read string $APP_REGISTRATION_CALLBACK_URI
+ * @property-read bool|null $KB_ACCOUNTSAPI_SANDBOX
+ * @property-read string|null $KB_ACCOUNTSAPI_CERTIFICATE_PATH
+ * @property-read string $KB_ACCOUNTSAPI_ADAA_API_KEY
+ * @property-read string $KB_ACCOUNTSAPI_AUTH_API_KEY
+ * @property-read string $KB_ACCOUNTSAPI_AUTH_CALLBACK_URI
+ * @property-read string $KB_ACCOUNTSAPI_SOFT_REGISTRATION_API_KEY
+ * @property-read string $KB_ACCOUNTSAPI_SOFT_REGISTRATION_CALLBACK_URI
+ * @property-read string $KB_ACCOUNTSAPI_APP_REGISTRATION_API_KEY
+ * @property-read string $KB_ACCOUNTSAPI_APP_REGISTRATION_CALLBACK_URI
  */
 class DotEnv
 {

@@ -1,24 +1,24 @@
 <?php
 
-namespace KbApi;
+namespace Spojenet\KbAccountsApi;
 
 use DateTimeImmutable;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\RequestOptions;
-use KbApi\Entity\Account;
-use KbApi\Entity\ApplicationReq;
-use KbApi\Entity\ClientReq;
-use KbApi\Entity\ClientRes;
-use KbApi\Entity\CreditDebit;
-use KbApi\Entity\Token;
-use KbApi\Entity\Tokens;
-use KbApi\Entity\Transaction;
-use KbApi\Entity\Transactions;
-use KbApi\Entity\TransactionSelection;
-use KbApi\Entity\TransactionStatus;
-use KbApi\Entity\TransactionType;
-use KbApi\Exception\KbClientException;
+use Spojenet\KbAccountsApi\Entity\Account;
+use Spojenet\KbAccountsApi\Entity\ApplicationReq;
+use Spojenet\KbAccountsApi\Entity\ClientReq;
+use Spojenet\KbAccountsApi\Entity\ClientRes;
+use Spojenet\KbAccountsApi\Entity\CreditDebit;
+use Spojenet\KbAccountsApi\Entity\Token;
+use Spojenet\KbAccountsApi\Entity\Tokens;
+use Spojenet\KbAccountsApi\Entity\Transaction;
+use Spojenet\KbAccountsApi\Entity\Transactions;
+use Spojenet\KbAccountsApi\Entity\TransactionSelection;
+use Spojenet\KbAccountsApi\Entity\TransactionStatus;
+use Spojenet\KbAccountsApi\Entity\TransactionType;
+use Spojenet\KbAccountsApi\Exception\KbClientException;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;

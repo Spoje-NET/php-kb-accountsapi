@@ -1,6 +1,6 @@
 <?php
 
-namespace KbApi;
+namespace Spojenet\KbAccountsApi;
 
 use SplFileInfo;
 
@@ -39,22 +39,22 @@ class Config
   public static function createFromEnv(SplFileInfo $filePath): self
   {
     $env = new DotEnv($filePath);
-    $sandbox = $env->SANDBOX ?? false;
+    $sandbox = $env->KB_ACCOUNTSAPI_SANDBOX ?? false;
 
     return new self(
       sandbox: $sandbox,
-      certificatePath: $env->CERTIFICATE_PATH,
-      softRegistrationApiKey: $env->SOFT_REGISTRATION_API_KEY,
+      certificatePath: $env->KB_ACCOUNTSAPI_CERTIFICATE_PATH,
+      softRegistrationApiKey: $env->KB_ACCOUNTSAPI_SOFT_REGISTRATION_API_KEY,
       softRegistrationUri: $sandbox ? self::SoftRegisterUriSand : self::SoftRegisterUriProd,
-      softRegistrationCallbackUri: $env->SOFT_REGISTRATION_CALLBACK_URI,
-      appRegistrationApiKey: $env->APP_REGISTRATION_API_KEY,
+      softRegistrationCallbackUri: $env->KB_ACCOUNTSAPI_SOFT_REGISTRATION_CALLBACK_URI,
+      appRegistrationApiKey: $env->KB_ACCOUNTSAPI_APP_REGISTRATION_API_KEY,
       appRegistrationUri: $sandbox ? self::AppRegisterUriSand : self::AppRegisterUriProd,
-      appRegistrationCallbackUri: $env->APP_REGISTRATION_CALLBACK_URI,
-      authApiKey: $env->AUTH_API_KEY,
-      authCallbackUri: $env->AUTH_CALLBACK_URI,
+      appRegistrationCallbackUri: $env->KB_ACCOUNTSAPI_APP_REGISTRATION_CALLBACK_URI,
+      authApiKey: $env->KB_ACCOUNTSAPI_AUTH_API_KEY,
+      authCallbackUri: $env->KB_ACCOUNTSAPI_AUTH_CALLBACK_URI,
       authLoginUri: $sandbox ? self::AuthLoginUriSand : self::AuthLoginUriProd,
       authTokenUri: $sandbox ? self::AuthTokenUriSand : self::AuthTokenUriProd,
-      adaaApiKey: $env->ADAA_API_KEY,
+      adaaApiKey: $env->KB_ACCOUNTSAPI_ADAA_API_KEY,
       adaaUri: $sandbox ? self::AdaaUriSand : self::AdaaUriProd,
     );
   }

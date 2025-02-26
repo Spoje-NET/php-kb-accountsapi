@@ -4,12 +4,12 @@
  * php -S localhost:8000 -t example/
  */
 
-use KbApi\Entity\Tokens;
-use KbApi\Entity\ClientReq;
-use KbApi\Entity\ApplicationReq;
-use KbApi\Entity\TransactionSelection;
-use KbApi\Exception\KbClientException;
-use KbApi\KbClient;
+use Spojenet\KbAccountsApi\Entity\Tokens;
+use Spojenet\KbAccountsApi\Entity\ClientReq;
+use Spojenet\KbAccountsApi\Entity\ApplicationReq;
+use Spojenet\KbAccountsApi\Entity\TransactionSelection;
+use Spojenet\KbAccountsApi\Exception\KbClientException;
+use Spojenet\KbAccountsApi\KbClient;
 use Tracy\Debugger;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -17,7 +17,7 @@ Debugger::enable(Debugger::Development);
 
 const AppID = 'sda-1';
 
-$kbClient = KbClient::createDefault(__DIR__ . '/../.env.dist');
+$kbClient = KbClient::createDefault(__DIR__ . '/../example.env');
 
 
 class Storage

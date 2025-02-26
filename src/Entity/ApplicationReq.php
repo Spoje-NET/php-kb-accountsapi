@@ -1,6 +1,6 @@
 <?php
 
-namespace KbApi\Entity;
+namespace Spojenet\KbAccountsApi\Entity;
 
 class ApplicationReq
 {

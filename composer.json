@@ -1,5 +1,5 @@
 {
-    "name": "spojenet/php-kb-accountsapi",
+    "name": "spojenet/kb-accountsapi",
     "description": "KB API client for Account Direct Access API (ADAA)",
     "keywords": ["php", "sdk", "rest", "api", "Komerční banka", "kb", "adaa"],
     "license": "MIT",
@@ -23,7 +23,7 @@
         "tracy/tracy": "^2.10"
     },
     "autoload": {
-        "psr-4": { "KbApi\\" : "src/" }
+        "psr-4": { "Spojenet\\KbAccountsApi\\" : "src/" }
     },
     "scripts": {
         "phpcs": "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --allow-risky yes"
