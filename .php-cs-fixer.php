@@ -14,5 +14,28 @@ return $config->setRules([
   'braces' => false,
   'single_blank_line_at_eof' => true,
   'blank_line_after_namespace' => true,
+  'blank_line_before_statement' => [
+    'statements' => [
+      'break',
+      'continue',
+      'declare',
+      'default',
+      'do',
+      'exit',
+      'for',
+      'foreach',
+      'goto',
+      'if',
+      'include',
+      'include_once',
+      'require',
+      'require_once',
+      'return',
+      'switch',
+      'throw',
+      'try',
+      'while',
+    ],
+  ]
 ])->setFinder($finder)
   ->setIndent('  ');

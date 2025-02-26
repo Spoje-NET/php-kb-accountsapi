@@ -133,6 +133,7 @@ class KbClient
 
     if ($response->getStatusCode() !== 200) {
       $data = json_decode($responseBody, associative: true);
+
       throw new KbClientException($response->getReasonPhrase(), compact('response', 'data'));
     }
 
@@ -377,7 +378,8 @@ class KbClient
 
   /* Utilities */
 
-  public static function createEncryptionKey(bool $forSandbox): string {
+  public static function createEncryptionKey(bool $forSandbox): string
+  {
     /** Sandbox does not support custom encryption key, this specific key is required */
     return $forSandbox
       ? 'MnM1djh5L0I/RShIK01iUWVUaFdtWnEzdDZ3OXokQyY='

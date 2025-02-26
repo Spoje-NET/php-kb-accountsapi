@@ -96,6 +96,7 @@ class DotEnv
     if (!$this->filePath->isFile()) {
       throw new RuntimeException("Missing config file '{$this->filePath}'");
     }
+
     if (!$this->filePath->isReadable()) {
       throw new RuntimeException("Not readable config file '{$this->filePath}'");
     }
