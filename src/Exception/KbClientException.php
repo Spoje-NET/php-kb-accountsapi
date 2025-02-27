@@ -1,6 +1,6 @@
 <?php
 
-namespace Spojenet\KbAccountsApi\Exception;
+namespace SpojeNet\KbAccountsApi\Exception;
 
 use Throwable;
 

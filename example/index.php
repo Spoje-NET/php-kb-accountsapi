@@ -4,12 +4,12 @@
  * php -S localhost:8000 -t example/
  */
 
-use Spojenet\KbAccountsApi\Entity\Tokens;
-use Spojenet\KbAccountsApi\Entity\ClientReq;
-use Spojenet\KbAccountsApi\Entity\ApplicationReq;
-use Spojenet\KbAccountsApi\Entity\TransactionSelection;
-use Spojenet\KbAccountsApi\Exception\KbClientException;
-use Spojenet\KbAccountsApi\KbClient;
+use SpojeNet\KbAccountsApi\Entity\Tokens;
+use SpojeNet\KbAccountsApi\Entity\ClientReq;
+use SpojeNet\KbAccountsApi\Entity\ApplicationReq;
+use SpojeNet\KbAccountsApi\Entity\TransactionSelection;
+use SpojeNet\KbAccountsApi\Exception\KbClientException;
+use SpojeNet\KbAccountsApi\KbClient;
 use Tracy\Debugger;
 
 require_once __DIR__ . '/../vendor/autoload.php';

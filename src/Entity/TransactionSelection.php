@@ -1,6 +1,6 @@
 <?php
 
-namespace Spojenet\KbAccountsApi\Entity;
+namespace SpojeNet\KbAccountsApi\Entity;
 
 use DateTimeInterface;
 

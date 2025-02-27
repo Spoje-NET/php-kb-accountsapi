@@ -23,7 +23,7 @@
         "tracy/tracy": "^2.10"
     },
     "autoload": {
-        "psr-4": { "Spojenet\\KbAccountsApi\\" : "src/" }
+        "psr-4": { "SpojeNet\\KbAccountsApi\\" : "src/" }
     },
     "scripts": {
         "phpcs": "PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --allow-risky yes"

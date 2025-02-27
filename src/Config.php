@@ -1,6 +1,6 @@
 <?php
 
-namespace Spojenet\KbAccountsApi;
+namespace SpojeNet\KbAccountsApi;
 
 use SplFileInfo;
 
