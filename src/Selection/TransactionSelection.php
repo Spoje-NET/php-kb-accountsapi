@@ -1,6 +1,6 @@
 <?php
 
-namespace SpojeNet\KbAccountsApi\Entity;
+namespace SpojeNet\KbAccountsApi\Selection;
 
 use DateTimeInterface;
 

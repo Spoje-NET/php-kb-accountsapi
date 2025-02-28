@@ -15,11 +15,14 @@ use SpojeNet\KbAccountsApi\Entity\Account;
 use SpojeNet\KbAccountsApi\Entity\ApplicationReq;
 use SpojeNet\KbAccountsApi\Entity\ClientReq;
 use SpojeNet\KbAccountsApi\Entity\ClientRes;
+use SpojeNet\KbAccountsApi\Entity\Statement;
 use SpojeNet\KbAccountsApi\Entity\Token;
 use SpojeNet\KbAccountsApi\Entity\Tokens;
 use SpojeNet\KbAccountsApi\Entity\Transactions;
-use SpojeNet\KbAccountsApi\Entity\TransactionSelection;
 use SpojeNet\KbAccountsApi\Exception\KbClientException;
+use SpojeNet\KbAccountsApi\Selection\StatementPdfSelection;
+use SpojeNet\KbAccountsApi\Selection\StatementsSelection;
+use SpojeNet\KbAccountsApi\Selection\TransactionSelection;
 use SpojeNet\KbAccountsApi\Utils\DtoMapper;
 use SpojeNet\KbAccountsApi\Utils\Random;
 
@@ -323,6 +326,11 @@ class KbClient
 
   /* Other steps is just requested data for account like transactions */
 
+  /**
+   * @param TransactionSelection $selection
+   * @throws KbClientException
+   * @return Transactions
+   */
   public function transactions(string $accessToken, TransactionSelection $selection): Transactions
   {
     $data = $this->sendAdaaRequest(
@@ -339,6 +347,33 @@ class KbClient
     return DtoMapper::map(Transactions::class, $data);
   }
 
+
+  /**
+   * @throws KbClientException
+   * @return Statement[]
+   */
+  public function statements(string $accessToken, StatementsSelection $selection): array
+  {
+    $data = $this->sendAdaaRequest(
+      accessToken: $accessToken,
+      endpoint: "/accounts/{$selection->accountId}/statements",
+      params: [
+        'dateFrom' => $selection->dateFrom->format('Y-m-d\TH:i:s\Z'),
+      ],
+    );
+
+    return array_map(static fn (array $item) => DtoMapper::map(Statement::class, $item), $data);
+  }
+
+
+  public function statementPdf(string $accessToken, StatementPdfSelection $selection): string
+  {
+    return $this->sendAdaaRequest(
+      accessToken: $accessToken,
+      endpoint: "/accounts/{$selection->accountId}/statements/{$selection->statementId}",
+      headers: ['Accept' => 'application/pdf'],
+    );
+  }
 
   /* Utilities */
 
@@ -365,16 +400,24 @@ class KbClient
 
   /**
    * @throws KbClientException
-   * @return mixed[]
+   * @return mixed[]|string
    */
-  private function sendAdaaRequest(string $accessToken, string $endpoint, array $params = []): array
+  private function sendAdaaRequest(string $accessToken, string $endpoint, array $params = [], array $headers = []): array|string
   {
     $request = $this->requestFactory
-      ->createRequest('GET', self::buildUri("{$this->config->adaaUri}{$endpoint}", $params))
-      ->withHeader('X-Correlation-Id', Random::correlationId())
-      ->withHeader('apiKey', $this->config->adaaApiKey)
-      ->withHeader('Authorization', "Bearer {$accessToken}")
-      ->withHeader('Accept', 'application/json');
+      ->createRequest('GET', self::buildUri("{$this->config->adaaUri}{$endpoint}", $params));
+
+    $headers = [
+      'Accept' => 'application/json',
+      'Authorization' => "Bearer {$accessToken}",
+      'apiKey' => $this->config->adaaApiKey,
+      'X-Correlation-Id' => Random::correlationId(),
+      ...$headers,
+    ];
+
+    foreach ($headers as $name => $value) {
+      $request = $request->withHeader($name, $value);
+    }
 
     try {
       $response = $this->httpClient->sendRequest($request);
@@ -388,6 +431,8 @@ class KbClient
       throw new KbClientException($response->getReasonPhrase(), compact('request', 'response', 'responseBody'));
     }
 
-    return json_decode($responseBody, associative: true);
+    return $headers['Accept'] === 'application/json'
+      ? json_decode($responseBody, associative: true)
+      : $responseBody;
   }
 }

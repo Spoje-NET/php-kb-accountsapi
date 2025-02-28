@@ -4,12 +4,14 @@
  * php -S localhost:8000 -t example/
  */
 
-use SpojeNet\KbAccountsApi\Entity\Tokens;
-use SpojeNet\KbAccountsApi\Entity\ClientReq;
 use SpojeNet\KbAccountsApi\Entity\ApplicationReq;
-use SpojeNet\KbAccountsApi\Entity\TransactionSelection;
+use SpojeNet\KbAccountsApi\Entity\ClientReq;
+use SpojeNet\KbAccountsApi\Entity\Tokens;
 use SpojeNet\KbAccountsApi\Exception\KbClientException;
 use SpojeNet\KbAccountsApi\KbClient;
+use SpojeNet\KbAccountsApi\Selection\StatementPdfSelection;
+use SpojeNet\KbAccountsApi\Selection\StatementsSelection;
+use SpojeNet\KbAccountsApi\Selection\TransactionSelection;
 use SpojeNet\KbAccountsApi\Utils\Random;
 use Tracy\Debugger;
 
@@ -202,7 +204,7 @@ function application(): void
       type: $app->client->type,
       encryptionKey: $app->client->encryptionKey,
     ), $app->id);
-    $clientIdLabel = '<a href="' . $uri . '" target="_blank">authorize</a>';
+    $clientIdLabel = '<a href="' . $uri . '" target="_blank" rel="opener">authorize</a>';
   }
 
   $tokenLabel = 'Missing Client ID!';
@@ -211,7 +213,7 @@ function application(): void
     $tokenLabel .= $app->tokens->refresh->isValid() ? ' ✅' : ' 🚫';
   } elseif (isset($app->client->clientId)) {
     $uri = $kbClient->clientAuthorizationCodeUri($app->client->clientId);
-    $tokenLabel = '<a href="' . $uri . '" target="_blank">authorize</a>';
+    $tokenLabel = '<a href="' . $uri . '" target="_blank" rel="opener">authorize</a>';
   }
 
   echo <<<HTML
@@ -246,9 +248,9 @@ function application(): void
     <table>
       <tr><th>ID</th><th>IBAN</th><th>Currency</th></tr>
   HTML;
-  $accountIdForTransactions = null;
+  $firstAccountId = null;
   foreach ($accounts as $account) {
-    $accountIdForTransactions ??= $account->accountId;
+    $firstAccountId ??= $account->accountId;
     $accountId = short($account->accountId);
     echo <<<HTML
       <tr><td>{$accountId}</td><td>{$account->iban}</td><td>{$account->currency}</td></tr>
@@ -256,8 +258,8 @@ function application(): void
   }
   echo '</table>';
 
-  writeLabel("Transactions for account ID {$accountIdForTransactions}");
-  $transactions = $kbClient->transactions($app->tokens->access->token, new TransactionSelection($accountIdForTransactions));
+  writeLabel("Transactions for account ID {$firstAccountId}");
+  $transactions = $kbClient->transactions($app->tokens->access->token, new TransactionSelection($firstAccountId));
   echo <<<HTML
     <table>
       <tr><th>Items:</th><td>{$transactions->numberOfElements}</td></tr>
@@ -265,6 +267,22 @@ function application(): void
     </table>
   HTML;
   array_map(fn($item) => writeOutput($item), $transactions->content);
+
+  writeLabel("Statements for account ID {$firstAccountId}");
+  $statements = $kbClient->statements($app->tokens->access->token, new StatementsSelection($firstAccountId, new DateTimeImmutable()));
+  echo <<<HTML
+    <table>
+      <tr><th>ID</th><th>Issued</th><th>Archived</th><th></th></tr>
+  HTML;
+  foreach ($statements as $statement) {
+    $issued = $statement->issued->format('Y-m-d H:i:s');
+    $archive = $statement->archive ? 'yes' : 'no';
+    $link = "/dl?account={$firstAccountId}&statement={$statement->statementId}";
+    echo <<<HTML
+      <tr><td>{$statement->statementId}</td><td>{$issued}</td><td>{$archive}</td><td><a href="{$link}" target="_blank">PDF</a></td></tr>
+    HTML;
+  }
+  echo '</table>';
 }
 
 function delete(): void {
@@ -309,7 +327,7 @@ function callback(): void {
         <tr><th>API key</th><td>{$apiKey}</td></tr>
       </table>
       <br />
-      <button onclick="window.onbeforeunload = () => {window.opener.location.href = '/app'}; window.close()">app detail</button>
+      <button onclick="window.opener.location.href = '/app'; window.close()">app detail</button>
     HTML;
   }
   /** Callback from client's authorization of scope */
@@ -327,8 +345,37 @@ function callback(): void {
         <tr><th>Access token</th><td>{$accessToken}</td></tr>
       </table>
       <br />
-      <button onclick="window.onbeforeunload = () => window.opener.location.reload(); window.close()">app detail</button>
+      <button onclick="window.opener.location.reload(); window.close()">app detail</button>
     HTML;
+  }
+}
+
+function download(): void {
+  global $storage, $kbClient;
+
+  $app = $storage->get();
+
+  if ($app === null) {
+    writeLabel('Application not found');
+    return;
+  }
+
+  if (isset($_GET['statement'])) {
+    $content = $kbClient->statementPdf($app->tokens->access->token, new StatementPdfSelection(
+      accountId: sanitizeInput('account'),
+      statementId: sanitizeInput('statement'),
+    ));
+
+    ob_clean();
+    header('Content-Type: application/pdf');  // nebo jiný vhodný MIME type
+    header('Content-Disposition: attachment; filename="statement.pdf"');
+    header('Content-Length: ' . strlen($content));
+    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+    header('Pragma: public');
+    header('Expires: 0');
+
+    echo $content;
+    exit;
   }
 }
 
@@ -343,6 +390,7 @@ function run(): void
       '/app' => fn() => application(),
       '/del' => fn() => delete(),
       '/back' => fn() => callback(),
+      '/dl' => fn() => download(),
       default => null,
     };
 
@@ -366,6 +414,7 @@ function run(): void
 }
 
 // HTML ***************************************************************************************************************
+ob_start();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -406,3 +455,4 @@ function run(): void
 <?php run(); ?>
 </body>
 </html>
+<?php echo ob_get_clean();
