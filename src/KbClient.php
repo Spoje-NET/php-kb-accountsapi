@@ -6,43 +6,35 @@ use DateTimeImmutable;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\RequestOptions;
-use SpojeNet\KbAccountsApi\Entity\Account;
-use SpojeNet\KbAccountsApi\Entity\ApplicationReq;
-use SpojeNet\KbAccountsApi\Entity\ClientReq;
-use SpojeNet\KbAccountsApi\Entity\ClientRes;
-use SpojeNet\KbAccountsApi\Entity\CreditDebit;
-use SpojeNet\KbAccountsApi\Entity\Token;
-use SpojeNet\KbAccountsApi\Entity\Tokens;
-use SpojeNet\KbAccountsApi\Entity\Transaction;
-use SpojeNet\KbAccountsApi\Entity\Transactions;
-use SpojeNet\KbAccountsApi\Entity\TransactionSelection;
-use SpojeNet\KbAccountsApi\Entity\TransactionStatus;
-use SpojeNet\KbAccountsApi\Entity\TransactionType;
-use SpojeNet\KbAccountsApi\Exception\KbClientException;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use SplFileInfo;
+use SpojeNet\KbAccountsApi\Entity\Account;
+use SpojeNet\KbAccountsApi\Entity\ApplicationReq;
+use SpojeNet\KbAccountsApi\Entity\ClientReq;
+use SpojeNet\KbAccountsApi\Entity\ClientRes;
+use SpojeNet\KbAccountsApi\Entity\Token;
+use SpojeNet\KbAccountsApi\Entity\Tokens;
+use SpojeNet\KbAccountsApi\Entity\Transactions;
+use SpojeNet\KbAccountsApi\Entity\TransactionSelection;
+use SpojeNet\KbAccountsApi\Exception\KbClientException;
+use SpojeNet\KbAccountsApi\Utils\DtoMapper;
+use SpojeNet\KbAccountsApi\Utils\Random;
 
 use function array_filter;
 use function array_unique;
 use function base64_decode;
 use function base64_encode;
-use function bin2hex;
-use function chr;
 use function compact;
 use function http_build_query;
 use function json_decode;
 use function json_encode;
-use function ord;
-use function random_bytes;
 use function str_ends_with;
 use function str_replace;
-use function str_split;
 use function str_starts_with;
 use function substr;
-use function vsprintf;
 
 class KbClient
 {
@@ -118,7 +110,7 @@ class KbClient
 
     $request = $this->requestFactory
       ->createRequest('POST', $this->config->softRegistrationUri)
-      ->withHeader('X-Correlation-Id', self::randomCorrelationId())
+      ->withHeader('X-Correlation-Id', Random::correlationId())
       ->withHeader('Content-Type', 'application/json')
       ->withHeader('apiKey', $this->config->softRegistrationApiKey)
       ->withBody($body);
@@ -160,7 +152,7 @@ class KbClient
 
     return self::buildUri($this->config->appRegistrationUri, [
       'registrationRequest' => $data,
-      'state' => $state ?? self::randomState(),
+      'state' => $state ?? Random::state(),
     ]);
   }
 
@@ -223,7 +215,7 @@ class KbClient
       'client_id' => $clientId,
       'scope' => implode(' ', $scope),
       'redirect_uri' => $this->config->authCallbackUri,
-      'state' => $state ?? self::randomState(),
+      'state' => $state ?? Random::state(),
     ]);
   }
 
@@ -246,7 +238,7 @@ class KbClient
 
     $request = $this->requestFactory
       ->createRequest('POST', $this->config->authTokenUri)
-      ->withHeader('X-Correlation-Id', self::randomCorrelationId())
+      ->withHeader('X-Correlation-Id', Random::correlationId())
       ->withHeader('Content-Type', 'application/x-www-form-urlencoded')
       ->withHeader('Accept', 'application/json')
       ->withHeader('apiKey', $this->config->authApiKey)
@@ -291,7 +283,7 @@ class KbClient
 
     $request = $this->requestFactory
       ->createRequest('POST', $this->config->authTokenUri)
-      ->withHeader('X-Correlation-Id', self::randomCorrelationId())
+      ->withHeader('X-Correlation-Id', Random::correlationId())
       ->withHeader('Content-Type', 'application/x-www-form-urlencoded')
       ->withHeader('apiKey', $this->config->authApiKey)
       ->withBody($form);
@@ -325,11 +317,7 @@ class KbClient
   {
     $data = $this->sendAdaaRequest($accessToken, '/accounts');
 
-    return array_map(static fn (array $item) => new Account(
-      id: $item['accountId'],
-      iban: $item['iban'],
-      currencyCode: $item['currency'],
-    ), $data);
+    return array_map(static fn (array $item) => DtoMapper::map(Account::class, $item), $data);
   }
 
 
@@ -348,61 +336,11 @@ class KbClient
       ], static fn ($value) => isset($value)),
     );
 
-    return new Transactions(
-      totalPages: $data['totalPages'],
-      page: $data['pageNumber'],
-      size: $data['pageSize'],
-      first: $data['first'],
-      last: $data['last'],
-      empty: $data['empty'],
-      totalItems: count($data['content']),
-      items: array_map(static fn (array $item) => new Transaction(
-        lastUpdated: new DateTimeImmutable($item['lastUpdated']),
-        bookingDate: isset($item['bookingDate']) ? new DateTimeImmutable($item['bookingDate']) : null,
-        creditDebitIndicator: CreditDebit::from($item['creditDebitIndicator']),
-        transactionType: TransactionType::from($item['transactionType']),
-        status: isset($item['status']) ? TransactionStatus::from($item['status']) : null,
-        counterPartyIban: $item['counterParty']['iban'] ?? '',
-        counterPartyName: $item['counterParty']['name'] ?? '',
-        amountValue: $item['instructed']['value'] ?? $item['amount']['value'] ?? null,
-        currency: $item['instructed']['currency'] ?? $item['amount']['currency'] ?? null,
-        variable: $item['references']['variable'] ?? '',
-        constant: $item['references']['constant'] ?? '',
-        specific: $item['references']['specific'] ?? '',
-        note: $item['references']['receiver'] ?? '',
-        additionalTransactionInformation: $item['additionalTransactionInformation'] ?? '',
-      ), $data['content'])
-    );
+    return DtoMapper::map(Transactions::class, $data);
   }
 
 
   /* Utilities */
-
-  public static function createEncryptionKey(bool $forSandbox): string
-  {
-    /** Sandbox does not support custom encryption key, this specific key is required */
-    return $forSandbox
-      ? 'MnM1djh5L0I/RShIK01iUWVUaFdtWnEzdDZ3OXokQyY='
-      : base64_encode(bin2hex(random_bytes(16)));
-  }
-
-
-  private static function randomCorrelationId(): string
-  {
-    $data = random_bytes(16);
-
-    $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
-    $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
-
-    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
-  }
-
-
-  private static function randomState(): string
-  {
-    return bin2hex(random_bytes(3));
-  }
-
 
   /**
    * @param array<string, string> $params
@@ -419,7 +357,7 @@ class KbClient
   }
 
 
-  private function formUrlEncode(array $params): string
+  private static function formUrlEncode(array $params): string
   {
     return http_build_query($params, arg_separator: '&');
   }
@@ -433,7 +371,7 @@ class KbClient
   {
     $request = $this->requestFactory
       ->createRequest('GET', self::buildUri("{$this->config->adaaUri}{$endpoint}", $params))
-      ->withHeader('X-Correlation-Id', self::randomCorrelationId())
+      ->withHeader('X-Correlation-Id', Random::correlationId())
       ->withHeader('apiKey', $this->config->adaaApiKey)
       ->withHeader('Authorization', "Bearer {$accessToken}")
       ->withHeader('Accept', 'application/json');

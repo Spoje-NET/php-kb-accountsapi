@@ -10,6 +10,7 @@ use SpojeNet\KbAccountsApi\Entity\ApplicationReq;
 use SpojeNet\KbAccountsApi\Entity\TransactionSelection;
 use SpojeNet\KbAccountsApi\Exception\KbClientException;
 use SpojeNet\KbAccountsApi\KbClient;
+use SpojeNet\KbAccountsApi\Utils\Random;
 use Tracy\Debugger;
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -155,7 +156,7 @@ function registration(): void
     client: new Client(
       name: sanitizeInput('clientName'),
       type: 'web',
-      encryptionKey: $kbClient::createEncryptionKey($kbClient->config->sandbox),
+      encryptionKey: Random::encryptionKey($kbClient->config->sandbox),
     ),
   );
 
@@ -247,10 +248,10 @@ function application(): void
   HTML;
   $accountIdForTransactions = null;
   foreach ($accounts as $account) {
-    $accountIdForTransactions ??= $account->id;
-    $accountId = short($account->id);
+    $accountIdForTransactions ??= $account->accountId;
+    $accountId = short($account->accountId);
     echo <<<HTML
-      <tr><td>{$accountId}</td><td>{$account->iban}</td><td>{$account->currencyCode}</td></tr>
+      <tr><td>{$accountId}</td><td>{$account->iban}</td><td>{$account->currency}</td></tr>
     HTML;
   }
   echo '</table>';
@@ -259,11 +260,11 @@ function application(): void
   $transactions = $kbClient->transactions($app->tokens->access->token, new TransactionSelection($accountIdForTransactions));
   echo <<<HTML
     <table>
-      <tr><th>Items:</th><td>{$transactions->totalItems}</td></tr>
+      <tr><th>Items:</th><td>{$transactions->numberOfElements}</td></tr>
       <tr><th>Pages:</th><td>{$transactions->totalPages}</td></tr>
     </table>
   HTML;
-  array_walk($transactions->items, fn($item) => writeOutput($item));
+  array_map(fn($item) => writeOutput($item), $transactions->content);
 }
 
 function delete(): void {

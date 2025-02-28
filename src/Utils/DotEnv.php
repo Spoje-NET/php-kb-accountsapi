@@ -1,6 +1,6 @@
 <?php
 
-namespace SpojeNet\KbAccountsApi;
+namespace SpojeNet\KbAccountsApi\Utils;
 
 use RuntimeException;
 use SplFileInfo;

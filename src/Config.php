@@ -3,6 +3,7 @@
 namespace SpojeNet\KbAccountsApi;
 
 use SplFileInfo;
+use SpojeNet\KbAccountsApi\Utils\DotEnv;
 
 class Config
 {
