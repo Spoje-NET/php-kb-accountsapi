@@ -31,12 +31,14 @@ use function array_unique;
 use function base64_decode;
 use function base64_encode;
 use function compact;
+use function getenv;
 use function http_build_query;
 use function json_decode;
 use function json_encode;
 use function str_ends_with;
 use function str_replace;
 use function str_starts_with;
+use function strtolower;
 use function substr;
 
 class KbClient
@@ -53,9 +55,30 @@ class KbClient
   }
 
 
-  public static function createDefault(string $envFilePath): self
+  /**
+   * @param string|null $envFilePath NULL for the path means reading ENV by function getenv()
+   * @throws KbClientException
+   */
+  public static function createDefault(?string $envFilePath): self
   {
-    $config = Config::createFromEnv(new SplFileInfo($envFilePath));
+    if (isset($envFilePath)) {
+      $config = Config::createFromDotEnv(new SplFileInfo($envFilePath));
+    } else {
+      $sandbox = getenv('KB_ACCOUNTSAPI_SANDBOX') ?: '';
+      $sandbox = in_array(strtolower($sandbox), ['1', 'on', 'yes', 'true'], strict: true);
+      $configCreator = $sandbox ? Config::createSandbox(...) : Config::createProduction(...);
+      $config = $configCreator(
+        certificatePath: getenv('KB_ACCOUNTSAPI_CERTIFICATE_PATH'),
+        softRegistrationApiKey: getenv('KB_ACCOUNTSAPI_SOFT_REGISTRATION_API_KEY'),
+        softRegistrationCallbackUri: getenv('KB_ACCOUNTSAPI_SOFT_REGISTRATION_CALLBACK_URL'),
+        appRegistrationApiKey: getenv('KB_ACCOUNTSAPI_APP_REGISTRATION_API_KEY'),
+        appRegistrationCallbackUri: getenv('KB_ACCOUNTSAPI_APP_REGISTRATION_CALLBACK_URL'),
+        authApiKey: getenv('KB_ACCOUNTSAPI_AUTH_API_KEY'),
+        authCallbackUri: getenv('KB_ACCOUNTSAPI_AUTH_CALLBACK_URL'),
+        adaaApiKey: getenv('KB_ACCOUNTSAPI_ADAA_API_KEY'),
+      );
+    }
+
     $clientOptions = [];
 
     if ($config->certificatePath) {
