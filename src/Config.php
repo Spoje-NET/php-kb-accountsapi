@@ -34,7 +34,8 @@ class Config
     public string $authTokenUri,
     public string $adaaApiKey,
     public string $adaaUri,
-  ) {}
+  ) {
+  }
 
 
   public static function createFromDotEnv(SplFileInfo $filePath): self

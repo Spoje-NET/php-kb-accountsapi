@@ -13,6 +13,7 @@ use Psr\Http\Message\StreamFactoryInterface;
 use SplFileInfo;
 use SpojeNet\KbAccountsApi\Entity\Account;
 use SpojeNet\KbAccountsApi\Entity\ApplicationReq;
+use SpojeNet\KbAccountsApi\Entity\Balance;
 use SpojeNet\KbAccountsApi\Entity\ClientReq;
 use SpojeNet\KbAccountsApi\Entity\ClientRes;
 use SpojeNet\KbAccountsApi\Entity\Statement;
@@ -27,6 +28,7 @@ use SpojeNet\KbAccountsApi\Utils\DtoMapper;
 use SpojeNet\KbAccountsApi\Utils\Random;
 
 use function array_filter;
+use function array_map;
 use function array_unique;
 use function base64_decode;
 use function base64_encode;
@@ -396,6 +398,21 @@ class KbClient
       endpoint: "/accounts/{$selection->accountId}/statements/{$selection->statementId}",
       headers: ['Accept' => 'application/pdf'],
     );
+  }
+
+
+  /**
+   * @throws KbClientException
+   * @return Balance[]
+   */
+  public function balances(string $accessToken, string $accountId): array
+  {
+    $data = $this->sendAdaaRequest(
+      accessToken: $accessToken,
+      endpoint: "/accounts/{$accountId}/balances",
+    );
+
+    return array_map(static fn (array $item) => DtoMapper::map(Balance::class, $item), $data);
   }
 
   /* Utilities */
