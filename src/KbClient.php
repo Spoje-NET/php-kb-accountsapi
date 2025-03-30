@@ -364,8 +364,8 @@ class KbClient
       params: array_filter([
         'page' => $selection->page,
         'size' => $selection->size,
-        'fromDate' => $selection->fromDate?->format('Y-m-d'),
-        'toDate' => $selection->toDate?->format('Y-m-d'),
+        'fromDateTime' => $selection->fromDateTime?->format('Y-m-d\TH:i:s.v\Z'),
+        'toDateTime' => $selection->toDateTime?->format('Y-m-d\TH:i:s.v\Z'),
       ], static fn ($value) => isset($value)),
     );
 

@@ -10,8 +10,8 @@ class TransactionSelection
     public readonly string $accountId,
     public readonly int $page = 0,
     public readonly int $size = 100,
-    public readonly ?DateTimeInterface $fromDate = null,
-    public readonly ?DateTimeInterface $toDate = null,
+    public readonly ?DateTimeInterface $fromDateTime = null,
+    public readonly ?DateTimeInterface $toDateTime = null,
   ) {
   }
 }
