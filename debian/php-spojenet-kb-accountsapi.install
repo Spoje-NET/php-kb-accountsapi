@@ -1,0 +1,6 @@
+src/*.php				/usr/share/php/KbAccountsApi/
+src/Selection/*.php			/usr/share/php/KbAccountsApi/Selection/
+src/Utils/*.php				/usr/share/php/KbAccountsApi/Utils/
+src/Exception/KbClientException.php	/usr/share/php/KbAccountsApi/Exception/
+src/Entity/*.php			/usr/share/php/KbAccountsApi/Entity/
+debian/composer.json			/usr/share/php/KbAccountsApi/

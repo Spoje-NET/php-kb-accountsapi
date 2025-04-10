@@ -7,3 +7,8 @@
 !.php-cs-fixer.php
 composer.lock
 /nbproject/private/
+/debian/php-spojenet-kb-accountsapi/
+/nbproject/
+/debian/php-spojenet-kb-accountsapi.debhelper.log
+/debian/php-spojenet-kb-accountsapi.substvars
+/debian/debhelper-build-stamp

@@ -1,0 +1,24 @@
+Source: php-spojenet-kb-accountsapi
+Section: unknown
+Priority: optional
+Maintainer: Vítězslav Dvořák <info@vitexsoftware.cz>
+Build-Depends:
+ debhelper-compat (= 13),
+Standards-Version: 4.7.0
+Homepage: https://github.com/Spoje-NET/php-kb-accountsapi
+Rules-Requires-Root: no
+Vcs-Git: https://github.com/Spoje-NET/php-kb-accountsapi.git
+Vcs-Browser: https://github.com/Spoje-NET/php-kb-accountsapi
+
+Package: php-spojenet-kb-accountsapi
+Architecture: any
+Multi-Arch: foreign
+Depends:
+ ${misc:Depends},
+ ${shlibs:Depends},
+ php-guzzlehttp-psr7
+Description: KB API client for Account Direct Access API (ADAA)
+ Connect your php application to
+ * Client’s transaction history
+ * Bank account balance
+ * Information about transaction history is provided in connection with current accounts of a client of Komerční banka.

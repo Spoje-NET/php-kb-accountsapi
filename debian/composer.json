@@ -1,0 +1,53 @@
+{
+    "name": "deb/kb-accountsapi",
+    "description": "KB API client for Account Direct Access API (ADAA)",
+    "keywords": ["php", "sdk", "rest", "api", "Komerční banka", "kb", "adaa"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ladislav Vondráček",
+            "email": "lad.von@gmail.com",
+            "homepage": "https://www.lawondyss.cz"
+        },
+        {
+            "name": "Vítězslav Dvořák",
+            "email": "info@vitexsoftware.cz",
+            "homepage": "https://vitexsoftware.com/"
+        }
+    ],
+    "config": {
+        "vendor-dir": "/var/lib/composer/php-spojenet-kb-accountsapi"
+    },
+    "autoload": {
+        "psr-4": {
+            "SpojeNet\\KbAccountsApi\\": "./",
+            "SpojeNet\\KbAccountsApi\\Entity\\": "./Entity",  
+            "SpojeNet\\KbAccountsApi\\Exception\\": "./Exception",  
+            "SpojeNet\\KbAccountsApi\\Selection\\": "./Selection",  
+            "SpojeNet\\KbAccountsApi\\Utils\\": "./Utils"
+        }
+    },
+
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=8.1",
+        "guzzlehttp/guzzle": "^7.3"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "/usr/share/php/EaseCore"
+        },
+        {
+            "type": "path",
+            "url": "/usr/share/php/KbAccountsApi"
+        },
+        {
+            "type": "path",
+            "url": "/usr/share/php/GuzzleHttp"
+        }
+    ],
+    "type": "library",
+    "homepage": "https://github.com/Spoje-NET/php-csas-accountsapi",
+    "license": "MIT"
+}
