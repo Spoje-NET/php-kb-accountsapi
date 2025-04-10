@@ -16,7 +16,8 @@ Multi-Arch: foreign
 Depends:
  ${misc:Depends},
  ${shlibs:Depends},
- php-guzzlehttp-psr7
+ php-guzzlehttp-psr7,
+ composer-debian
 Description: KB API client for Account Direct Access API (ADAA)
  Connect your php application to
  * Client’s transaction history
