@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.spoje_net.php_spojenet_kb_accountsapi</id>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  <name>php-spojenet-kb-accountsapi</name>
+  <summary>KB API client for Account Direct Access API (ADAA)</summary>
+  <description>
+    <p>
+      Connect your php application to * Client’s transaction history * Bank account balance * Information about transaction history is provided in connection with current accounts of a client of Komerční banka.
+    </p>
+  </description>
+  <categories>
+    <category>Utility</category>
+  </categories>
+  <url type="homepage">https://github.com/Spoje-NET/php-kb-accountsapi</url>
+  <url type="bugtracker">https://github.com/Spoje-NET/php-kb-accountsapi/issues</url>
+  <developer id="io.github.spoje_net">
+    <name>Spoje.Net</name>
+  </developer>
+  <content_rating type="oars-1.1"/>
+</component>
