@@ -1,4 +1,5 @@
 # Komerční banka - Accounts API
+![Packaging: deb](https://img.shields.io/badge/packaging-.deb-red?logo=debian&logoColor=white)
 
 KB API client for Account Direct Access API (ADAA).
 
