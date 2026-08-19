@@ -1,4 +1,4 @@
-# WARP.md - Working AI Reference for php-spojenet-kb-accountsapi
+# AGENTS.md - Working AI Reference for php-spojenet-kb-accountsapi
 
 ## Project Overview
 **Type**: PHP Project/Debian Package
